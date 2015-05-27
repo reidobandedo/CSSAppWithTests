@@ -2,6 +2,7 @@ package edu.uw.tacoma.mmuppa.cssappwithtests.controllers;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,16 +11,11 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import edu.uw.tacoma.mmuppa.cssappwithtests.R;
@@ -28,6 +24,7 @@ import edu.uw.tacoma.mmuppa.cssappwithtests.model.Course;
 
 public class CourseListActivity extends ActionBarActivity {
 
+    private static final String TAG = "CourseListActivity";
     private ListView mCoursesListView;
     private CourseAdapter mAdapter;
     private CourseDB mCourseDB;
@@ -35,6 +32,7 @@ public class CourseListActivity extends ActionBarActivity {
     private ArrayList<Course> mCourseList;
     private static final String COURSE_URL
             = "http://cssgate.insttech.washington.edu/~mmuppa/Android/test.php?cmd=courses";
+
     private String mCourses;
     private ProgressDialog mProgressDialog;
 
@@ -43,6 +41,7 @@ public class CourseListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_list);
 
+        mTextView = (TextView) findViewById(R.id.text_view);
     }
 
     @Override
@@ -108,12 +107,13 @@ public class CourseListActivity extends ActionBarActivity {
         @Override
         protected String doInBackground(String... urls) {
             String response = "";
+            HttpURLConnection urlConnection = null;
             for (String url : urls) {
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(url);
                 try {
-                    HttpResponse execute = client.execute(httpGet);
-                    InputStream content = execute.getEntity().getContent();
+                    URL urlObject = new URL(url);
+                    urlConnection = (HttpURLConnection) urlObject.openConnection();
+
+                    InputStream content = urlConnection.getInputStream();
 
                     BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
                     String s = "";
@@ -122,35 +122,47 @@ public class CourseListActivity extends ActionBarActivity {
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    response = "Unable to download the list of courses, Reason: "
+                            + e.getMessage();
+                }
+                finally {
+                    if (urlConnection != null)
+                        urlConnection.disconnect();
                 }
             }
             return response;
         }
 
 
+        /**
+         * It checks to see if there was a problem with the URL(Network) which is when an
+         * exception is caught. If there was an exception, it is displayed in red using the text
+         * view widget. It tries to call the parse Method and checks to see if it was successful.
+         * If not, it displays the exception.
+         * @param result
+         */
         @Override
         protected void onPostExecute(String result) {
             mProgressDialog.dismiss();
-            mCourses = result;
-            if (mCourses != null) {
-                try {
-                    JSONArray arr = new JSONArray(mCourses);
-
-                    for (int i = 0; i < arr.length(); i++) {
-                        JSONObject obj = arr.getJSONObject(i);
-                        Course course = new Course(obj.getString(Course.ID), obj.getString(Course.SHORT_DESC)
-                                , obj.getString(Course.LONG_DESC), obj.getString(Course.PRE_REQS));
-                        mCourseList.add(course);
-                    }
-                } catch (JSONException e) {
-                    System.out.println("JSON Exception");
-                }
-
+            // Something wrong with the network or the URL.
+            if (result.startsWith("Unable to")) {
+                mTextView.setText(result);
+                mTextView.setTextColor(Color.RED);
+                return;
             }
 
+            mCourses = result;
+            result = Course.parseCourseJSON(mCourses, mCourseList);
+            // Something wrong with the JSON returned.
+            if (result != null) {
+                mTextView.setTextColor(Color.RED);
+                mTextView.setText(result);
+                return;
+            }
+
+            // Everything is good, show the list of courses.
             if (!mCourseList.isEmpty()) {
-                mCoursesListView.setAdapter(mAdapter);
+                    mCoursesListView.setAdapter(mAdapter);
             }
         }
     }

@@ -38,7 +38,6 @@ public class CourseActivityTest extends ActivityInstrumentationTestCase2<CourseA
     }
 
     public void testOrientation() {
-
         solo.enterText(0, "TCSS305");
         solo.enterText(1, "I am a short description");
         solo.enterText(2, "I am a long description");

@@ -3,6 +3,8 @@
     package="edu.uw.tacoma.mmuppa.cssappwithtests" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Added this for Robotium tests -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -18,16 +20,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".controllers.CourseActivity"
             android:label="@string/app_name" >
         </activity>
-
         <activity
             android:name=".controllers.InstructorActivity"
             android:label="@string/app_name" >
         </activity>
+
+        <service
+            android:name=".services.CourseService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

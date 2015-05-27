@@ -78,6 +78,11 @@ public class CourseActivity extends Activity {
                 Toast.makeText(v.getContext(), "Course added successfully!", Toast.LENGTH_SHORT)
                         .show();
 
+                // Clearing the texts after completion of the add.
+                mCourseIdEditText.setText("");
+                mCourseShortDescriptionEditText.setText("");
+                mCourseLongDescriptionEditText.setText("");
+                mCoursePrereqsEditText.setText("");
             }
         });
     }

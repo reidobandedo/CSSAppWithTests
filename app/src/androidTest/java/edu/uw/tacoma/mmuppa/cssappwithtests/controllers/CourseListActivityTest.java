@@ -1,7 +1,9 @@
 package edu.uw.tacoma.mmuppa.cssappwithtests.controllers;
+
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.robotium.solo.Solo;
+
 /**
  * Created by mmuppa on 5/3/15.
  */
@@ -20,10 +22,13 @@ public class CourseListActivityTest extends ActivityInstrumentationTestCase2<Cou
     }
 
     public void testDataShowsUp() {
+
         solo.unlockScreen();
         boolean textFound = solo.searchText("TCSS450");
         assertTrue("Course List Data retrieved", textFound);
+
     }
+
 
     @Override
     public void tearDown() throws Exception {
