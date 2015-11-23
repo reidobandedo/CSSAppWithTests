@@ -1,8 +1,11 @@
 package edu.uw.tacoma.mmuppa.cssappwithtests.controllers;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.EditText;
 
 import com.robotium.solo.Solo;
+
+import edu.uw.tacoma.mmuppa.cssappwithtests.R;
 
 
 /**
@@ -30,8 +33,8 @@ public class CourseActivityTest extends ActivityInstrumentationTestCase2<CourseA
 
     public void testRequiredFields() {
         solo.unlockScreen();
-
-        solo.enterText(0, "");
+        EditText courseId = (EditText) getActivity().findViewById(R.id.course_id_edit_text);
+        solo.enterText(courseId, "");
         solo.clickOnButton("Add Course");
         boolean textFound = solo.searchText("Please enter all fields except for prereqs");
         assertTrue("Required fields validation failed", textFound);

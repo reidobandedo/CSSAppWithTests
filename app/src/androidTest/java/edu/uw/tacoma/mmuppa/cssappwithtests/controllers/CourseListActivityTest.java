@@ -24,6 +24,7 @@ public class CourseListActivityTest extends ActivityInstrumentationTestCase2<Cou
     public void testDataShowsUp() {
 
         solo.unlockScreen();
+        solo.sleep(10000);
         boolean textFound = solo.searchText("TCSS450");
         assertTrue("Course List Data retrieved", textFound);
 

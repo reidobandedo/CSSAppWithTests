@@ -8,11 +8,11 @@ import com.robotium.solo.SystemUtils;
 /**
  * Created by mmuppa on 5/25/15.
  */
-public class CourseListActivityNetworkTest extends ActivityInstrumentationTestCase2<CourseListActivity> {
+public class CourseListActivityTestDownNetwork extends ActivityInstrumentationTestCase2<CourseListActivity> {
 
     private Solo solo;
 
-    public CourseListActivityNetworkTest() {
+    public CourseListActivityTestDownNetwork() {
         super(CourseListActivity.class);
     }
 
